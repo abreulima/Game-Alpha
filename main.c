@@ -20,8 +20,12 @@ void load_level();
 
 // https://prdeving.wordpress.com/2018/06/27/videogames-programming-ecs-system-in-plain-c/
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
+
+typedef struct {
+	SDL_Texture *texture;
+} ComponentSprite;
 
 typedef struct {
 	int size;
@@ -36,8 +40,8 @@ typedef struct {
 typedef struct {
 	float vel_x;
 	float vel_y;
+	float speed;
 } ComponentVelocity;
-
 
 typedef struct {
 	Uint8 *key_state;
@@ -48,12 +52,12 @@ typedef struct {
 	SDL_Scancode attack;
 } ComponentKeyboard;
 
-
 typedef struct {
 	ComponentPosition *component_position;
 	ComponentVelocity *component_velocity;
 	ComponentBox *component_box;
 	ComponentKeyboard *component_keyboard;
+	ComponentSprite *component_sprite;
 } Components;
 
 typedef struct {
@@ -75,6 +79,11 @@ typedef struct {
 Game game;
 static int entities_id = 0;
 
+void AddComponentSprite(Entity *entity, char *path)
+{
+	SDL_Surface * image = SDL_LoadBMP(path);
+	entity->components.component_sprite->texture = SDL_CreateTextureFromSurface(game.renderer, image);
+}
 void AddComponentPosition(Entity *entity, float x, float y)
 {
 	entity->components.component_position = malloc(sizeof(ComponentPosition));
@@ -82,11 +91,12 @@ void AddComponentPosition(Entity *entity, float x, float y)
 	entity->components.component_position->y = y;
 }
 
-void AddComponentVelocity(Entity *entity, float vel_x, float vel_y)
+void AddComponentVelocity(Entity *entity, float vel_x, float vel_y, float speed)
 {
 	entity->components.component_velocity = malloc(sizeof(ComponentVelocity));
 	entity->components.component_velocity->vel_x = vel_x;
 	entity->components.component_velocity->vel_y = vel_y;
+	entity->components.component_velocity->speed = speed;
 }
 
 void AddComponentKeyboard(
@@ -139,21 +149,21 @@ int KeyboardSystem(Entity *entity)
 {
 	if (!entity->components.component_keyboard || !entity->components.component_velocity)
 		return (0);
-
+	float speed = entity->components.component_velocity->speed;
 	entity->components.component_velocity->vel_x = 0;
 	entity->components.component_velocity->vel_y = 0;
 
 	if (game.key_state[entity->components.component_keyboard->left] ) {
-		entity->components.component_velocity->vel_x -= 2;
+		entity->components.component_velocity->vel_x -= speed;
 	}
 	if (game.key_state[entity->components.component_keyboard->right] ) {
-		entity->components.component_velocity->vel_x += 2;
+		entity->components.component_velocity->vel_x += speed;
 	}
 	if (game.key_state[entity->components.component_keyboard->up] ) {
-		entity->components.component_velocity->vel_y -= 2;
+		entity->components.component_velocity->vel_y -= speed;
 	}
 	if (game.key_state[entity->components.component_keyboard->down] ) {
-		entity->components.component_velocity->vel_y += 2;
+		entity->components.component_velocity->vel_y += speed;
 	}
 
 	return (1);
@@ -169,6 +179,12 @@ int MovementSystem(Entity *entity)
 	entity->components.component_position->y += entity->components.component_velocity->vel_y * game.deltaTime;
 
 	return (1);
+}
+int	DrawImageSystem(Entity *entity)
+{
+	if (!entity->components.component_sprite)
+		return (0);
+	SDL_RenderCopy(game.renderer, entity->components.component_sprite->texture, NULL,NULL);
 }
 
 void AddEntity(Entity entity)
@@ -205,7 +221,8 @@ int main(void)
 	start();
 	while (game.is_running)
 	{
-		update();
+		update_events();
+		update_render();
 		game.deltaTime = (float)1/60;
 		SDL_Delay(1/60);
 	}
@@ -234,8 +251,7 @@ void update()
 	/*  We divide this function in two sections */
 	/*  Events and Render */
 
-	update_events();
-	update_render();
+
 }
 
 void update_events()
@@ -260,6 +276,7 @@ void update_render()
 		KeyboardSystem(&game.entities[i]);
 		MovementSystem(&game.entities[i]);
 		DrawSystem(&game.entities[i]);
+		DrawImageSystem(&game.entities[i]);
 	}
 	SDL_RenderPresent(game.renderer);
 }
@@ -278,7 +295,7 @@ void load_level()
 		SDL_SCANCODE_DOWN,
 		SDL_SCANCODE_SPACE
 		);
-	AddComponentVelocity(&player, 0, 0);
+	AddComponentVelocity(&player, 0, 0, 60);
 	AddEntity(player);
 
 
@@ -289,15 +306,16 @@ void load_level()
 	AddComponentBox(&player_two, 32, (SDL_Color){255, 255, 255});
 	AddComponentKeyboard(
 	&player_two,
-	SDL_SCANCODE_D,
 	SDL_SCANCODE_A,
+	SDL_SCANCODE_D,
 	SDL_SCANCODE_W,
 	SDL_SCANCODE_S,
 	SDL_SCANCODE_K
 	);
-	AddComponentVelocity(&player_two, 0, 0);
+	AddComponentVelocity(&player_two, 0, 0, 60);
 
 	// Add Gravity
 	// Add Keyboard
+	AddComponentSprite(&player_two, "image.bmp");
 	AddEntity(player_two);
 }
