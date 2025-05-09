@@ -1,5 +1,5 @@
 CC := cc
-CFLAGS := -lSDL2
+CFLAGS :=
 LDFLAGS := -lSDL2
 NAME := game
 CSOURCES := main.c
@@ -8,7 +8,7 @@ COBJS := $(CSOURCES:.c=.o)
 all: $(NAME)
 
 $(NAME): $(COBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 run:
 	./game
