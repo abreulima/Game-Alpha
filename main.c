@@ -20,8 +20,8 @@ void load_level();
 
 // https://prdeving.wordpress.com/2018/06/27/videogames-programming-ecs-system-in-plain-c/
 
-#define SCREEN_WIDTH 1920
-#define SCREEN_HEIGHT 1080
+#define SCREEN_WIDTH 500	
+#define SCREEN_HEIGHT 300
 
 typedef struct {
 	SDL_Texture *texture;
@@ -79,11 +79,6 @@ typedef struct {
 Game game;
 static int entities_id = 0;
 
-void AddComponentSprite(Entity *entity, char *path)
-{
-	SDL_Surface * image = SDL_LoadBMP(path);
-	entity->components.component_sprite->texture = SDL_CreateTextureFromSurface(game.renderer, image);
-}
 void AddComponentPosition(Entity *entity, float x, float y)
 {
 	entity->components.component_position = malloc(sizeof(ComponentPosition));
@@ -119,10 +114,15 @@ void AddComponentBox(Entity *entity, const int size, SDL_Color color)
 	entity->components.component_box->color = color; // 255, 0, 0 0
 	entity->components.component_box->size = size;
 }
+void AddComponentSprite(Entity *entity, char *path) 
+{
+	entity->components.component_sprite = malloc(sizeof(ComponentSprite));
+	SDL_Surface *image = SDL_LoadBMP(path);
+	entity->components.component_sprite->texture = SDL_CreateTextureFromSurface(game.renderer, image);
+}
 
 int DrawSystem(Entity *entity)
 {
-
 	// It is necessary to check if the entity has the necessary componentes;
 
 	SDL_Rect rect;
@@ -184,7 +184,14 @@ int	DrawImageSystem(Entity *entity)
 {
 	if (!entity->components.component_sprite)
 		return (0);
-	SDL_RenderCopy(game.renderer, entity->components.component_sprite->texture, NULL,NULL);
+
+	SDL_Rect rect;
+	rect.x = (int)entity->components.component_position->x;
+	rect.y = (int)entity->components.component_position->y;
+	rect.w = entity->components.component_box->size;
+	rect.h = entity->components.component_box->size;
+
+	SDL_RenderCopy(game.renderer, entity->components.component_sprite->texture, NULL, &rect);
 }
 
 void AddEntity(Entity entity)
@@ -302,20 +309,20 @@ void load_level()
 	Entity player_two;
 	//player_two.components.component_keyboard = NULL;
 	memset(&player_two, 0, sizeof(Entity));
-	AddComponentPosition(&player_two, 300, 100);
-	AddComponentBox(&player_two, 32, (SDL_Color){255, 255, 255});
+	AddComponentPosition(&player_two, 120, 120);
+	AddComponentBox(&player_two, 32, (SDL_Color){0, 255, 255});
 	AddComponentKeyboard(
-	&player_two,
-	SDL_SCANCODE_A,
-	SDL_SCANCODE_D,
-	SDL_SCANCODE_W,
-	SDL_SCANCODE_S,
-	SDL_SCANCODE_K
+		&player_two,
+		SDL_SCANCODE_A,
+		SDL_SCANCODE_D,
+		SDL_SCANCODE_W,
+		SDL_SCANCODE_S,
+		SDL_SCANCODE_K
 	);
 	AddComponentVelocity(&player_two, 0, 0, 60);
-
+	
 	// Add Gravity
 	// Add Keyboard
-	AddComponentSprite(&player_two, "image.bmp");
+	AddComponentSprite(&player_two,"image.bmp");
 	AddEntity(player_two);
 }
