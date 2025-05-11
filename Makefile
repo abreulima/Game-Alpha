@@ -1,14 +1,47 @@
 CC := cc
-CFLAGS :=
+CFLAGS := -Iinc
 LDFLAGS := -lSDL2
 NAME := game
-CSOURCES := main.c
-COBJS := $(CSOURCES:.c=.o)
+
+SRC_DIR = src
+OBJ_DIR = obj
+BIN_DIR = bin
+
+C_SOURCES := 	src/main.c \
+				src/AddComponentBox.c \
+				src/AddComponentKeyboard.c \
+				src/AddComponentPosition.c \
+				src/AddComponentRectangle.c \
+				src/AddComponentSprite.c \
+				src/AddComponentVelocity.c \
+				src/CollisionSystem.c \
+				src/DrawImageSystem.c \
+				src/DrawSystem.c \
+				src/Entity.c \
+				src/Game.c \
+				src/KeyboardSystem.c \
+				src/MovementSystem.c
+
 
 all: $(NAME)
 
-$(NAME): $(COBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+C_OBJS := $(C_SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(NAME): $(C_OBJS)
+	$(CC) $(CFLAGS) -g -o $(BIN_DIR)/$@ $^ $(LDFLAGS)
+
+clean:
+	rm -rf bin/game
+
+fclean: clean
+	rm -rf $(OBJ_DIR)/*.o
+
+
+re: clean all
 
 run:
-	./game
+	cd ./$(BIN_DIR)
+	./$(NAME)
