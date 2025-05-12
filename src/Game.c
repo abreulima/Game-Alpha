@@ -1,7 +1,10 @@
 /* This function is called once */
 #include <SDL2/SDL.h>
 
+
+#include "Entity.h"
 #include "Game.h"
+
 #include "Components.h"
 #include "AddComponents.h"
 #include "Systems.h"
@@ -30,8 +33,7 @@ void setup(Game *game)
 		-1,
 		SDL_RENDERER_ACCELERATED);
 
-
-	game->entities = malloc(sizeof(Entity) * 5);
+	game->entities = malloc(sizeof(Entity) * 1024);
 }
 
 void start(Game *game)
@@ -65,8 +67,9 @@ void update_render(Game *game)
 	{
 		KeyboardSystem(game, &game->entities[i]);
 		MovementSystem(game, &game->entities[i]);
-		DrawSystem(game, &game->entities[i]);
+		GravitySystem(game,&game->entities[i]);
 		DrawImageSystem(game, &game->entities[i]);
+		DrawSystem(game, &game->entities[i]);
 	}
 
 	game->deltaTime = 1/60.f;
@@ -79,6 +82,7 @@ void load_level(Game *game)
 {
 	Entity player;
 	memset(&player, 0, sizeof(Entity));
+	AddComponentGravity(game, &player);
 	AddComponentPosition(game, &player, 120, 120);
 	AddComponentBox(game, &player, 32, (SDL_Color){255, 0, 255});
 	AddComponentKeyboard(
@@ -89,14 +93,15 @@ void load_level(Game *game)
 		SDL_SCANCODE_UP,
 		SDL_SCANCODE_DOWN,
 		SDL_SCANCODE_SPACE
-		);
+	);
 	AddComponentVelocity(game, &player, 0, 0, 5);
 	AddNamedEntity(game, player, "PLAYER");
-
-
+	
+	
 	Entity player_two;
 	//player_two.components.component_keyboard = NULL;
 	memset(&player_two, 0, sizeof(Entity));
+	AddComponentGravity(game, &player_two);
 	AddComponentPosition(game, &player_two, 240, 240);
 	AddComponentBox(game, &player_two, 32, (SDL_Color){0, 255, 255});
 	AddComponentVelocity(game, &player_two, 0, 0, 5);

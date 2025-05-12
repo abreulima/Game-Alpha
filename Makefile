@@ -7,21 +7,22 @@ SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
 
-C_SOURCES := 	src/main.c \
+C_SOURCES := 	src/Main.c \
 				src/AddComponentBox.c \
 				src/AddComponentKeyboard.c \
 				src/AddComponentPosition.c \
 				src/AddComponentRectangle.c \
 				src/AddComponentSprite.c \
+				src/AddComponentGravity.c \
 				src/AddComponentVelocity.c \
 				src/CollisionSystem.c \
 				src/DrawImageSystem.c \
 				src/DrawSystem.c \
 				src/Entity.c \
-				src/Game.c \
 				src/KeyboardSystem.c \
-				src/MovementSystem.c
-
+				src/MovementSystem.c \
+				src/GravitySystem.c \
+				src/Game.c
 
 all: $(NAME)
 
@@ -39,8 +40,7 @@ clean:
 fclean: clean
 	rm -rf $(OBJ_DIR)/*.o
 
-
-re: clean all
+re: fclean all
 
 run:
 	cd ./$(BIN_DIR)

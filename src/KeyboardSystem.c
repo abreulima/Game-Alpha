@@ -22,6 +22,8 @@ int KeyboardSystem(Game *game, Entity *entity)
 	if (game->key_state[entity->components.component_keyboard->down] ) {
 		entity->components.component_velocity->vel_y += speed;
 	}
-
+	if (game->key_state[entity->components.component_keyboard->up] ) {
+		//entity->components.component_velocity->vel_y -= 20;
+	}
 	return (1);
 }

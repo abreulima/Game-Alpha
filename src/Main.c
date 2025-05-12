@@ -27,7 +27,6 @@ int main(void)
 		update_events(&game);
 		update_render(&game);
 	}
-
 	free(game.entities); 
 	SDL_DestroyRenderer(game.renderer);
 	SDL_DestroyWindow(game.window);

@@ -10,5 +10,4 @@ void AddComponentRectangle(struct Game *game, Entity *entity, const int width, c
 	entity->components.component_rectangle->color = color;
 	entity->components.component_rectangle->width = width;
 	entity->components.component_rectangle->height = height;
-
 }

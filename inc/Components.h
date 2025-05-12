@@ -7,8 +7,10 @@
 #include "components/KeyboardComponent.h"
 #include "components/SpriteComponent.h"
 #include "components/VelocityComponent.h"
+#include "components/GravityComponent.h"
 
 typedef struct {
+	GravityComponent *component_gravity;
 	PositionComponent *component_position;
 	VelocityComponent *component_velocity;
 	BoxComponent *component_box;

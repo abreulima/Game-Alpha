@@ -7,6 +7,7 @@ struct Game; // Forward declaration
 
 typedef struct Entity{
 	unsigned int id;
+	int	is_active;
 	char *name;
 	Components components;
 } Entity;

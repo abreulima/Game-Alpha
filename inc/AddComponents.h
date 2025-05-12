@@ -4,6 +4,7 @@
 #include "Entity.h"
 
 void AddComponentPosition(struct Game *game, Entity *entity, float x, float y);
+void AddComponentGravity(struct Game *game, Entity *entity);
 void AddComponentVelocity(struct Game *game, Entity *entity, float vel_x, float vel_y, float speed);
 void AddComponentBox(struct Game *game, Entity *entity, const int size, SDL_Color color);
 void AddComponentRectangle(struct Game *game, Entity *entity, const int width, const int height, SDL_Color color);
